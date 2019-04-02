@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/untitled.dir/main.cpp.o  -o untitled  -L/home/kirill/libtcod-1.5.1 -Wl,-rpath,/home/kirill/libtcod-1.5.1 -ltcod -ltcodxx 
