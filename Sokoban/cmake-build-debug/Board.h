@@ -15,6 +15,60 @@
 #include <boost/any.hpp>
 using namespace std;
 
+class CommonBox{
+private:
+    int i;
+    int j;
+    char sym;
+public:
+    CommonBox()=default;
+    CommonBox(int value,int value1,char value3){
+        j=value;
+        i=value1;
+        sym=value3;
+    }
+    char typ()
+    const{
+        return sym;
+    }
+    bool operator<( const CommonBox& other) const
+    {
+        if ( j == other.j )
+        {
+            return i < other.i;
+        }
+
+        return j < other.j;
+    }
+};
+
+class CommonMark{
+private:
+    int i;
+    int j;
+    char sym;
+public:
+    CommonMark()=default;
+    CommonMark(int value,int value1,char value3){
+        j=value;
+        i=value1;
+        sym=value3;
+    }
+    char typ()
+    const{
+        return sym;
+    }
+    bool operator<( const CommonMark& other) const
+    {
+        if ( j == other.j )
+        {
+            return i < other.i;
+        }
+
+        return j < other.j;
+    }
+};
+
 template <typename K>
 class Box{
 private:
@@ -35,15 +89,6 @@ public:
             return 'C';
         else
             return 'I';
-    }
-    int posY(){
-        return i;
-    }
-    int posX() {
-        return j;
-    }
-    char symb(char var) {
-        sym=var;
     }
     bool operator<( const Box& other) const
     {
@@ -78,16 +123,6 @@ public:
             return 'C';
         else
             return 'I';
-    }
-    int posY(){
-        i=i-1;
-    }
-    int posX(){
-        return j;
-    }
-    char symb()
-    const {
-        posY();
     }
     bool operator<( const Mark& other) const
     {
@@ -130,7 +165,8 @@ public:
     const {
         return length;
     }
-    void GameMap(TwoD<char>TwoDArray,const vector<TCODColor>& colourVec, vector<int>& Player, map<Mark <char>,vector <int>>& X_MarkChar,map<Mark <int>,vector <int>>& X_MarkInt,map<Box<char>, vector<int>>& O_BoxChar,map<Box <int>, vector<int>>& O_BoxInt){
+    void GameMap(TwoD<char>TwoDArray,const vector<TCODColor>& colourVec, vector<int>& Player, map<Mark <char>,vector <int>>& X_MarkChar,map<Mark <int>,vector <int>>& X_MarkInt,map<Box<char>,
+            vector<int>>& O_BoxChar,map<Box <int>, vector<int>>& O_BoxInt,map<vector<int>,int>&TypeBox,map<CommonMark,vector<int>>&X_Mark,map<CommonBox,vector<int>>&O_Box){
         TCODConsole::initRoot(TwoDArray.GetDmX(), TwoDArray.GetDmY(), "SOKOBAN");
         TCODConsole::root->setDefaultBackground({220,220,220});
         for (auto i = 0; i < TwoDArray.GetDmY(); i++){
@@ -139,61 +175,59 @@ public:
             }
         }
         for (auto i = 0; i < TwoDArray.GetDmY(); i++){
-            for (auto j = 0; j < TwoDArray.GetDmX(); j++){
+            for (auto j = 0; j < TwoDArray.GetDmX(); j++) {
 
-                if (TCODConsole::root -> getChar(j, i) == '@'){
-                    TCODConsole::root->setCharBackground(j,i,colourVec[0]);
-                    Player = {j,i};
-                }
-                else if (TCODConsole::root -> getChar(j, i) == '#'){
-                    TCODConsole::root->setCharBackground(j,i,colourVec[1]);
-                }
-                else if (TCODConsole::root -> getChar(j, i) == 'O'){
-
-                    TCODConsole::root->setCharBackground(j,i,colourVec[2]);
-                    if(count%2==0){
-                        Box<char>BoxChar1(j,i,'O');
-                        //TCODConsole::root -> setChar(j, i, BoxChar1.symb());
-                        //TCODConsole::root->setChar(j,i,'O');
-                        //TCODConsole::root->setCharBackground(j,i,colourVec[2]);
-                        O_BoxChar[BoxChar1] = {j,i};
-                        count++;
-                    } else{
-                        Box<int>BoxInt1(j,i,'0');
-                        //TCODConsole::root -> setChar(j, i, BoxInt1.symb());
-                        //TCODConsole::root->setCharBackground(j,i,colourVec[2]);
-                        O_BoxInt[BoxInt1] = {j,i};
-                        count++;
+                if (TCODConsole::root->getChar(j, i) == '@') {
+                    TCODConsole::root->setCharBackground(j, i, colourVec[0]);
+                    Player = {j, i};
+                } else if (TCODConsole::root->getChar(j, i) == '#') {
+                    TCODConsole::root->setCharBackground(j, i, colourVec[1]);
+                } else if (TCODConsole::root->getChar(j, i) == 'O') {
+                    for (auto &cross:TypeBox) {
+                        if (cross.first[0] == j && cross.first[1] == i && cross.second == 1) {
+                            TCODConsole::root->setCharBackground(j, i, colourVec[2]);
+                            Box<char> BoxChar1(j, i, 'O');
+                            O_BoxChar[BoxChar1] = {j, i};
+                        } else if (cross.first[0] == j && cross.first[1] == i && cross.second == 2) {
+                            TCODConsole::root->setCharBackground(j, i, colourVec[3]);
+                            Box<int> BoxInt1(j, i, '0');
+                            O_BoxInt[BoxInt1] = {j, i};
+                        } else if(cross.first[0] == j && cross.first[1] == i && cross.second == 0) {
+                            TCODConsole::root->setCharBackground(j, i, colourVec[4]);
+                            CommonBox CBox(j,i,'A');
+                            O_Box[CBox] = {j, i};
+                        }
                     }
-
-
-                }
-                else if (TCODConsole::root -> getChar(j, i) == 'X'){
-                    TCODConsole::root->setCharBackground(j,i,colourVec[2]);
-                    if(count1%2==0){
-                        Mark<char>MarkChar1(j,i,'X');
-                        //TCODConsole::root->setChar(j,i,'X');
-                        //TCODConsole::root->setCharBackground(j,i,colourVec[2]);
-                        X_MarkChar[MarkChar1] = {j,i};
-                        count1++;
-                    } else{
-                        Mark<int>MarkInt1(j,i,'X');
-                        //TCODConsole::root->setChar(j,i,'X');
-                        //TCODConsole::root->setCharBackground(j,i,colourVec[2]);
-                        X_MarkInt[MarkInt1] = {j,i};
-                        count1++;
+                } else if (TCODConsole::root->getChar(j, i) == 'X') {
+                    for (auto &cross:TypeBox) {
+                        if (cross.first[0] == j && cross.first[1] == i && cross.second == 1) {
+                            TCODConsole::root->setCharBackground(j, i, colourVec[5]);
+                            Mark<char> MarkChar1(j, i, 'X');
+                            X_MarkChar[MarkChar1] = {j, i};
+                        } else if (cross.first[0] == j && cross.first[1] == i && cross.second == 2) {
+                            TCODConsole::root->setCharBackground(j, i, colourVec[6]);
+                            Mark<int> MarkInt1(j, i, 'X');
+                            X_MarkInt[MarkInt1] = {j, i};
+                        } else if(cross.first[0] == j && cross.first[1] == i && cross.second == 0){
+                            TCODConsole::root->setCharBackground(j, i, colourVec[7]);
+                            CommonMark CMark(j,i,'A');
+                            X_Mark[CMark] = {j, i};
+                        }
                     }
                 }
             }
         }
         TCODConsole::root->flush();
     }
-    bool ifWin(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int>,vector<int>>& X_MarkInt,int counter){
+    bool ifWin(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int>,vector<int>>& X_MarkInt,map<CommonMark,vector<int>>&X_Mark,int counter){
         int winCnt = 0;
         for (auto cross : X_MarkChar){
             winCnt++;
         }
         for (auto cross : X_MarkInt){
+            winCnt++;
+        }
+        for (auto cross : X_Mark){
             winCnt++;
         }
         if (winCnt == counter) {
@@ -206,12 +240,9 @@ public:
 
 
 private:
-    int count=0;
-    int count1=0;
     unsigned length;
     unsigned width;
     T **val;
 
 };
-
 #endif //PROJECT_BOARD_H
