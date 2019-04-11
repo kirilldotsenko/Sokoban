@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/ServerSokoban.dir/main.cpp.o  -o ServerSokoban 

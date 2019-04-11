@@ -1,0 +1,3 @@
+/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/CMakeFiles/ServerSokoban.dir
+/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/CMakeFiles/edit_cache.dir
