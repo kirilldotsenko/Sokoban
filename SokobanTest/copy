@@ -1,0 +1,43 @@
+ 
+    void SetPosition(const unsigned posX, const unsigned posY, T obj) {
+        massiv[posX][posY] = obj;
+    }
+    char GetPosition (const unsigned posX, const unsigned posY) const{
+        return massiv[posX][posY];
+    }
+
+    unsigned  getDimX() const {
+        return b;
+    }
+
+    unsigned  getDimY() const {
+        return a;
+    }
+
+    friend ostream& operator<< (ostream& stream, TwoD<T>& TwoDArray);
+    friend ifstream& operator>> (ifstream &file, TwoD<T> &TwoDArray);
+
+
+};
+ostream& operator<<(ostream& stream, TwoD<char>& TwoDArr) {
+    for (auto i = 0; i < TwoDArr.a; i++){
+        for (auto j = 0; j < TwoDArr.b; j++){
+            stream << TwoDArr.GetPosition(i,j);
+        }
+        cout << endl;
+    }
+    return stream;
+}
+
+ifstream& operator>> (ifstream &file, TwoD<char> &TwoDArray) {
+    unsigned len, wth;
+    file >> len >> wth;
+    TwoD<char> mapLocal(len, wth);
+    TwoDArray = mapLocal;
+    string buf;
+    getline(file,buf);
+    for (auto i = 0; i < len ; i++)
+        for (auto j = 0; j <= wth; j++){
+            TwoDArray.SetPosition(i,j,file.get());
+        }
+}

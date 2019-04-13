@@ -44,6 +44,30 @@ libtcod.hpp
 boost/any.hpp
 -
 
+/home/kirill/CLionProjects/SokobanNew/cmake-build-debug/MapRecipient.h
+sys/types.h
+-
+sys/socket.h
+-
+netinet/in.h
+-
+stdio.h
+-
+stdlib.h
+-
+unistd.h
+-
+arpa/inet.h
+-
+iostream
+-
+fstream
+-
+stdio.h
+-
+stdlib.h
+-
+
 /home/kirill/CLionProjects/SokobanNew/main.cpp
 iostream
 -
@@ -65,6 +89,8 @@ cmake-build-debug/Board.h
 /home/kirill/CLionProjects/SokobanNew/cmake-build-debug/Board.h
 boost/any.hpp
 -
+cmake-build-debug/MapRecipient.h
+/home/kirill/CLionProjects/SokobanNew/cmake-build-debug/MapRecipient.h
 
 /home/kirill/libtcod-1.5.1/include/bresenham.h
 

@@ -88,6 +88,9 @@
 		<Unit filename="/home/kirill/CLionProjects/SokobanNew/cmake-build-debug/Board.h">
 			<Option target="untitled"/>
 		</Unit>
+		<Unit filename="/home/kirill/CLionProjects/SokobanNew/cmake-build-debug/MapRecipient.h">
+			<Option target="untitled"/>
+		</Unit>
 		<Unit filename="/home/kirill/CLionProjects/SokobanNew/main.cpp">
 			<Option target="untitled"/>
 		</Unit>

@@ -15,35 +15,36 @@
 
 using namespace std;
 
-int main()
-{
+int main() {
     DIR *dir;
     struct dirent *ent;
-    vector<string>maps;
-    if ((dir = opendir ("/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/GameMaps")) != NULL) {
+    vector<string> maps;
+    if ((dir = opendir("/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/GameMaps")) != NULL) {
         /* print all the files and directories within directory */
-        while ((ent = readdir (dir)) != NULL) {
-            if(ent->d_type==DT_REG) {
+        while ((ent = readdir(dir)) != NULL) {
+            if (ent->d_type == DT_REG) {
                 maps.push_back(ent->d_name);
             }
         }
-        closedir (dir);
+        closedir(dir);
     } else {
         /* could not open directory */
-        perror ("");
+        perror("");
         return EXIT_FAILURE;
     }
     srand(time(NULL));
-    string a=maps[rand()%maps.size()];
+    string a = maps[rand() % maps.size()];
 
     int listener;
     struct sockaddr_in addr;
     char buf[1024];
+    char players[]="Y";
+    char players1[]="N";
     int bytes_read;
+    int count = 0;
 
     listener = socket(AF_INET, SOCK_STREAM, 0);
-    if(listener < 0)
-    {
+    if (listener < 0) {
         perror("socket");
         exit(1);
     }
@@ -51,10 +52,9 @@ int main()
     fcntl(listener, F_SETFL, O_NONBLOCK);
 
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(3459);
+    addr.sin_port = htons(3458);
     addr.sin_addr.s_addr = INADDR_ANY;
-    if(bind(listener, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-    {
+    if (bind(listener, (struct sockaddr *) &addr, sizeof(addr)) < 0) {
         perror("bind");
         exit(2);
     }
@@ -64,14 +64,13 @@ int main()
     set<int> clients;
     clients.clear();
 
-    while(1)
-    {
+    while (1) {
         // Заполняем множество сокетов
         fd_set readset;
         FD_ZERO(&readset);
         FD_SET(listener, &readset);
 
-        for(set<int>::iterator it = clients.begin(); it != clients.end(); it++)
+        for (set<int>::iterator it = clients.begin(); it != clients.end(); it++)
             FD_SET(*it, &readset);
 
         // Задаём таймаут
@@ -81,19 +80,16 @@ int main()
 
         // Ждём события в одном из сокетов
         int mx = max(listener, *max_element(clients.begin(), clients.end()));
-        if(select(mx+1, &readset, NULL, NULL, &timeout) <= 0)
-        {
+        if (select(mx + 1, &readset, NULL, NULL, &timeout) <= 0) {
             perror("select");
             exit(3);
         }
 
         // Определяем тип события и выполняем соответствующие действия
-        if(FD_ISSET(listener, &readset))
-        {
+        if (FD_ISSET(listener, &readset)) {
             // Поступил новый запрос на соединение, используем accept
             int sock = accept(listener, NULL, NULL);
-            if(sock < 0)
-            {
+            if (sock < 0) {
                 perror("accept");
                 exit(3);
             }
@@ -103,16 +99,13 @@ int main()
             clients.insert(sock);
         }
 
-        for(set<int>::iterator it = clients.begin(); it != clients.end(); it++)
-        {
-            if(FD_ISSET(*it, &readset))
-            {
+        for (set<int>::iterator it = clients.begin(); it != clients.end(); it++) {
+            if (FD_ISSET(*it, &readset)) {
                 // Поступили данные от клиента, читаем их
                 bytes_read = recv(*it, buf, 1024, 0);
 
 
-                if(bytes_read <= 0)
-                {
+                if (bytes_read <= 0) {
                     // Соединение разорвано, удаляем сокет из множества
                     close(*it);
                     clients.erase(*it);
@@ -121,28 +114,38 @@ int main()
 
                 // Отправляем данные обратно клиенту
 
-
-                size_t length = 0;
-                char * buff = 0;
-                ifstream fs("/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/GameMaps/"+a, ios::out | ios::binary);
-                if (fs.is_open()) {
-                    fs.seekg(0, ios::end);
-                    length = fs.tellg();
-                    fs.seekg(0, ios::beg);
-                    buff = new char[1 + length];
-                    fs.read(buff, length);
-                    buff[length] = 0;
+                if (buf[0] == 'M') {
+                    size_t length = 0;
+                    char *buff = 0;
+                    ifstream fs("/home/kirill/CLionProjects/ServerSokoban/cmake-build-debug/GameMaps/" + a,
+                                ios::out | ios::binary);
+                    if (fs.is_open()) {
+                        fs.seekg(0, ios::end);
+                        length = fs.tellg();
+                        fs.seekg(0, ios::beg);
+                        buff = new char[1 + length];
+                        fs.read(buff, length);
+                        buff[length] = 0;
+                    }
                     send(*it, buff, length, 0);
-
+                    fs.close();
+                    cout << buff << endl;
                 }
-                fs.close();
-                cout<<buff<<endl;
-                //send(*it, buff, sizeof(buff), 0);
+                if(buf[0]=='K'){
+                    cout<<"HI"<<endl;
+                    if(count==0) {
+                        send(*it, players, sizeof(players), 0);
+                        count++;
+                    }
+                    else{
+                        send(*it, players1, sizeof(players1), 0);
+                        count--;
+                    }
+                }
             }
         }
     }
 
-    return 0;
 }
 /*#include <sys/types.h>
 #include <sys/socket.h>
