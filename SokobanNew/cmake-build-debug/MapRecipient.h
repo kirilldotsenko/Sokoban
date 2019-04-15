@@ -20,6 +20,7 @@ char message[] = "M";
 char message1[]="K";
 char buf[1024];
 int counter=0;
+int check=0;
 char pl1;
 char pl2;
 
@@ -78,9 +79,9 @@ void MapR(){
         if (buf[0]=='N'){
             pl1='P';
             pl2='@';
+            check++;
         }
-        //send(sock, message1, sizeof(message1), 0);
-        //recv(sock, buf, sizeof(buf), 0);
+
         ifstream in("map.txt");
         TwoD<char> TestBoard;
         in >> TestBoard;
@@ -105,8 +106,18 @@ void MapR(){
         map<CommonMark,vector<int>>X_Mark;
         TestBoard.GameMap(TestBoard, colourVec, Player,Player2, X_MarkChar,X_MarkInt, O_BoxChar,O_BoxInt,TypeBox,X_Mark,O_Box,pl1,pl2);
         while (TestBoard.ifWin(X_MarkChar,X_MarkInt,X_Mark,counter) && EndOfGame(0)) {
-            counter=updateWinPositions(X_MarkChar,X_MarkInt,O_BoxChar,O_BoxInt,O_Box,X_Mark, colourVec,pl1,pl2);
-            chkKeyPressAndMovePlayer(TestBoard,Player, colourVec, O_BoxChar,O_BoxInt,O_Box,pl1,pl2);
+            if(check==0) {
+                counter = updateWinPositions(X_MarkChar, X_MarkInt, O_BoxChar, O_BoxInt, O_Box, X_Mark, colourVec, pl1,
+                                             pl2);
+                buf[0]=chkKeyPressAndMovePlayer(TestBoard, Player, colourVec, O_BoxChar, O_BoxInt, O_Box, pl1, pl2);
+                send(sock,buf,sizeof(buf),0);
+                check++;
+            }
+            cout<<check<<endl;
+            recv(sock,buf,sizeof(buf),0);
+            if(buf[0]=='S'){
+                check--;
+            }
         }
     }
 

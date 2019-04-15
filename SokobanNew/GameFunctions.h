@@ -102,7 +102,7 @@ int updateWinPositions(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int> ,
     return counter;
 }
 
-void chkKeyPressAndMovePlayer(TwoD<char>TwoDArray,vector<int>& Player, const vector<TCODColor>& colourVec,map<Box<char>, vector<int>>& O_BoxChar,map<Box<int>, vector<int>>& O_BoxInt,map<CommonBox,vector<int>>&O_Box,char pl1,char pl2){
+char chkKeyPressAndMovePlayer(TwoD<char>TwoDArray,vector<int>& Player, const vector<TCODColor>& colourVec,map<Box<char>, vector<int>>& O_BoxChar,map<Box<int>, vector<int>>& O_BoxInt,map<CommonBox,vector<int>>&O_Box,char pl1,char pl2){
     TCOD_key_t key = TCODConsole::checkForKeypress();
     TCODConsole::root->flush();
 
@@ -570,5 +570,6 @@ void chkKeyPressAndMovePlayer(TwoD<char>TwoDArray,vector<int>& Player, const vec
     else if(key.c=='q' || key.c=='Q'){
         i+=1;
     }
+    return key.c;
 }
 #endif //PROJECT_GAMEFUNCTIONS_H

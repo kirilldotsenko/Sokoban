@@ -40,6 +40,7 @@ int main() {
     char buf[1024];
     char players[]="Y";
     char players1[]="N";
+    char control[]="S";
     int bytes_read;
     int count = 0;
 
@@ -140,6 +141,14 @@ int main() {
                     else{
                         send(*it, players1, sizeof(players1), 0);
                         count--;
+                    }
+                }
+                else{
+                    if(it==clients.begin()){
+                        send(*it+1,control,sizeof(control),0);
+                    }
+                    else{
+                        send(*it-1,control,sizeof(control),0);
                     }
                 }
             }
