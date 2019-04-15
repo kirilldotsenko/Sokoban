@@ -15,11 +15,13 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/ioctl.h>
 using namespace std;
 char message[] = "M";
 char message1[]="K";
 char buf[1024];
 int counter=0;
+int bytesAv=0;
 int check=0;
 char pl1;
 char pl2;
@@ -68,7 +70,6 @@ void MapR(){
         else
         {
             file.write(buf, res);
-            cout<<buf<<endl;
             file.close();
         }
         send(sock, message1, sizeof(message1), 0);
@@ -107,17 +108,25 @@ void MapR(){
         map<CommonMark,vector<int>>X_Mark;
         TestBoard.GameMap(TestBoard, colourVec, Player,Player2, X_MarkChar,X_MarkInt, O_BoxChar,O_BoxInt,TypeBox,X_Mark,O_Box,pl1,pl2);
         while (TestBoard.ifWin(X_MarkChar,X_MarkInt,X_Mark,counter) && EndOfGame(0)) {
-            if(check==0) {
-                counter = updateWinPositions(X_MarkChar, X_MarkInt, O_BoxChar, O_BoxInt, O_Box, X_Mark, colourVec, pl1,
-                                             pl2);
-                buf[0]=chkKeyPressAndMovePlayer(TestBoard, Player, colourVec, O_BoxChar, O_BoxInt, O_Box, pl1, pl2);
-                send(sock,buf,sizeof(buf),0);
+            counter = updateWinPositions(X_MarkChar, X_MarkInt, O_BoxChar, O_BoxInt, O_Box, X_Mark, colourVec, pl1,
+                                         pl2);
+            buf[0]=chkKeyPressAndMovePlayer(TestBoard, Player, colourVec, O_BoxChar, O_BoxInt, O_Box, pl1, pl2,check);
+            if ((buf[0]=='W' || buf[0]=='w' || buf[0]=='A' || buf[0]=='a' || buf[0]=='S' || buf[0]=='s' || buf[0]=='D' || buf[0]=='d' || buf[0]=='Q' || buf[0]=='q') && check==0) {
+                send(sock, buf, sizeof(buf), 0);
                 check++;
             }
-            //cout<<check<<endl;
-            recv(sock,buf,sizeof(buf),0);
-            if(buf[0]=='S'){
+            if (!bytesAv && ioctl (sock,FIONREAD,&bytesAv) >= 0)
+                continue;
+            else
+                recv(sock,buf,sizeof(buf),0);
+            if(buf[1]=='S'){
                 check--;
+                bytesAv=0;
+            }
+            if (buf[0]=='W' || buf[0]=='w' || buf[0]=='A' || buf[0]=='a' || buf[0]=='S' || buf[0]=='s' || buf[0]=='D' || buf[0]=='d' || buf[0]=='Q' || buf[0]=='q'){
+                button=buf[0];
+                UpdatePlayer2(TestBoard,Player2,colourVec,O_BoxChar,O_BoxInt,O_Box,pl1,pl2,button);
+                buf[0]=' ';
             }
         }
     }

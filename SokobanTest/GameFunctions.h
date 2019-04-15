@@ -52,7 +52,7 @@ bool EndOfGame(int a){
 }
 
 int updateWinPositions(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int> ,vector<int>>& X_MarkInt,map<Box<char>, vector<int>>& O_BoxChar,map<Box<int>, vector<int>>& O_BoxInt,
-        map<CommonBox,vector<int>>&O_Box,map<CommonMark,vector<int>>&X_Mark,const vector<TCODColor>& colourVec,char pl1,char pl2) {
+                       map<CommonBox,vector<int>>&O_Box,map<CommonMark,vector<int>>&X_Mark,const vector<TCODColor>& colourVec,char pl1,char pl2) {
     int counter=0;
     for (auto &cross : X_MarkChar) {
         for(auto &cross1:O_BoxChar) {
@@ -62,6 +62,8 @@ int updateWinPositions(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int> ,
                 TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[8]);
                 counter++;
             } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == pl1) {
+                TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[0]);
+            } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == pl2) {
                 TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[0]);
             } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == ' ') {
                 TCODConsole::root->setChar(cross.second[0], cross.second[1], 'X');
@@ -78,6 +80,8 @@ int updateWinPositions(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int> ,
                 counter++;
             } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == pl1) {
                 TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[0]);
+            } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == pl2) {
+                TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[0]);
             } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == ' ') {
                 TCODConsole::root->setChar(cross.second[0], cross.second[1], 'X');
                 TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[6]);
@@ -93,7 +97,9 @@ int updateWinPositions(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int> ,
                 counter++;
             }else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == pl1) {
                 TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[0]);
-            } else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == ' ') {
+            }else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == pl2) {
+                TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[0]);
+            }else if (TCODConsole::root->getChar(cross.second[0], cross.second[1]) == ' ') {
                 TCODConsole::root->setChar(cross.second[0], cross.second[1], 'X');
                 TCODConsole::root->setCharBackground(cross.second[0], cross.second[1], colourVec[7]);
             }
@@ -102,474 +108,932 @@ int updateWinPositions(map<Mark <char>,vector<int>>& X_MarkChar,map<Mark <int> ,
     return counter;
 }
 
-char chkKeyPressAndMovePlayer(TwoD<char>TwoDArray,vector<int>& Player, const vector<TCODColor>& colourVec,map<Box<char>, vector<int>>& O_BoxChar,map<Box<int>, vector<int>>& O_BoxInt,map<CommonBox,vector<int>>&O_Box,char pl1,char pl2){
+char chkKeyPressAndMovePlayer(TwoD<char>TwoDArray,vector<int>& Player, const vector<TCODColor>& colourVec,map<Box<char>, vector<int>>& O_BoxChar,map<Box<int>, vector<int>>& O_BoxInt,map<CommonBox,vector<int>>&O_Box,char pl1,char pl2,int check){
     TCOD_key_t key = TCODConsole::checkForKeypress();
     TCODConsole::root->flush();
 
-    if ( key.c == 'w' || key.c == 'W' ) {
-        if (TCODConsole::root -> getChar(Player[0], Player[1] - 1) != '#' && TCODConsole::root -> getChar(Player[0], Player[1] - 1) != pl2) {
-            if (TCODConsole::root->getChar(Player[0], Player[1] - 1) != 'O' && Player[1]-1>=0) {
-                TCODConsole::root->setChar(Player[0], Player[1] - 1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], Player[1] - 1, colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                Player = {Player[0], Player[1] - 1};
-            }else if((TCODConsole::root -> getChar(Player[0], TwoDArray.GetDmY()-1) != '#')
-            && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-1) != 'O')
-            && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-1) != pl2)
-            && Player[1]-1<0){
-                TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-1, colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                Player={Player[0],Player[1]=TwoDArray.GetDmY()-1};
-            }else if ((TCODConsole::root->getChar(Player[0], Player[1] - 1) == 'O')
-                       && (TCODConsole::root->getChar(Player[0], Player[1] - 2) != '#')
-                       && (TCODConsole::root->getChar(Player[0], Player[1] - 2) != pl2)
-                       && (TCODConsole::root->getChar(Player[0], Player[1] - 2) != 'O')
-                       && Player[1]-2>=0) {
-                TCODConsole::root->setChar(Player[0], Player[1] - 1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], Player[1] - 1, colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]==cross.second[0])&&(Player[1]-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], Player[1] - 2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], Player[1] - 2, colourVec[2]);
-                        cross.second={cross.second[0],cross.second[1]-1};
+    if (check==0) {
+        if (key.c == 'w' || key.c == 'W') {
+            if (TCODConsole::root->getChar(Player[0], Player[1] - 1) != '#' &&
+                TCODConsole::root->getChar(Player[0], Player[1] - 1) != pl2) {
+                if (TCODConsole::root->getChar(Player[0], Player[1] - 1) != 'O' && Player[1] - 1 >= 0) {
+                    TCODConsole::root->setChar(Player[0], Player[1] - 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], Player[1] - 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0], Player[1] - 1};
+                } else if ((TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) != '#')
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) != 'O')
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) != pl2)
+                           && Player[1] - 1 < 0) {
+                    TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0], Player[1] = TwoDArray.GetDmY() - 1};
+                } else if ((TCODConsole::root->getChar(Player[0], Player[1] - 1) == 'O')
+                           && (TCODConsole::root->getChar(Player[0], Player[1] - 2) != '#')
+                           && (TCODConsole::root->getChar(Player[0], Player[1] - 2) != pl2)
+                           && (TCODConsole::root->getChar(Player[0], Player[1] - 2) != 'O')
+                           && Player[1] - 2 >= 0) {
+                    TCODConsole::root->setChar(Player[0], Player[1] - 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], Player[1] - 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], Player[1] - 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], Player[1] - 2, colourVec[2]);
+                            cross.second = {cross.second[0], cross.second[1] - 1};
+                        }
                     }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]==cross.second[0])&&(Player[1]-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], Player[1] - 2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], Player[1] - 2, colourVec[3]);
-                        cross.second={cross.second[0],cross.second[1]-1};
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], Player[1] - 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], Player[1] - 2, colourVec[3]);
+                            cross.second = {cross.second[0], cross.second[1] - 1};
+                        }
                     }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]==cross.second[0])&&(Player[1]-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], Player[1] - 2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], Player[1] - 2, colourVec[4]);
-                        cross.second={cross.second[0],cross.second[1]-1};
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], Player[1] - 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], Player[1] - 2, colourVec[4]);
+                            cross.second = {cross.second[0], cross.second[1] - 1};
+                        }
                     }
-                }
-                Player = {Player[0], Player[1] - 1};
-            }else if ((TCODConsole::root->getChar(Player[0], Player[1] - 1) == 'O')
-                      && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-1) != '#')
-                      && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-1) != pl2)
-                      && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-1) != 'O')
-                      && Player[1]-2<0) {
-                TCODConsole::root->setChar(Player[0], Player[1] - 1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], Player[1] - 1, colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]==cross.second[0])&&(Player[1]-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-1, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-1, colourVec[2]);
-                        cross.second={cross.second[0],cross.second[1]=TwoDArray.GetDmY()-1};
+                    Player = {Player[0], Player[1] - 1};
+                } else if ((TCODConsole::root->getChar(Player[0], Player[1] - 1) == 'O')
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) != '#')
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) != pl2)
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) != 'O')
+                           && Player[1] - 2 < 0) {
+                    TCODConsole::root->setChar(Player[0], Player[1] - 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], Player[1] - 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 1, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 1, colourVec[2]);
+                            cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 1};
+                        }
                     }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]==cross.second[0])&&(Player[1]-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-1, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-1, colourVec[3]);
-                        cross.second={cross.second[0],cross.second[1]=TwoDArray.GetDmY()-1};
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 1, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 1, colourVec[3]);
+                            cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 1};
+                        }
                     }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]==cross.second[0])&&(Player[1]-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-1, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-1, colourVec[4]);
-                        cross.second={cross.second[0],cross.second[1]=TwoDArray.GetDmY()-1};
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 1, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 1, colourVec[4]);
+                            cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 1};
+                        }
                     }
-                }
-                Player = {Player[0], Player[1] - 1};
-            }else if ((TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-1) == 'O')
-                      && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-2) != '#')
-                      && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY()-2) != pl2)
-                      && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 2) != 'O')
-                      && Player[1]-1<0){
-                TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 1, colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]==cross.second[0])&&(TwoDArray.GetDmY()-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-2, colourVec[2]);
-                        cross.second={cross.second[0],cross.second[1]=TwoDArray.GetDmY()-2};
+                    Player = {Player[0], Player[1] - 1};
+                } else if ((TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 1) == 'O')
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 2) != '#')
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 2) != pl2)
+                           && (TCODConsole::root->getChar(Player[0], TwoDArray.GetDmY() - 2) != 'O')
+                           && Player[1] - 1 < 0) {
+                    TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] == cross.second[0]) && (TwoDArray.GetDmY() - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 2, colourVec[2]);
+                            cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 2};
+                        }
                     }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]==cross.second[0])&&(TwoDArray.GetDmY()-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-2, colourVec[3]);
-                        cross.second={cross.second[0],cross.second[1]=TwoDArray.GetDmY()-2};
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] == cross.second[0]) && (TwoDArray.GetDmY() - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 2, colourVec[3]);
+                            cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 2};
+                        }
                     }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]==cross.second[0])&&(TwoDArray.GetDmY()-1==cross.second[1])){
-                        TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY()-2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY()-2, colourVec[4]);
-                        cross.second={cross.second[0],cross.second[1]=TwoDArray.GetDmY()-2};
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] == cross.second[0]) && (TwoDArray.GetDmY() - 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], TwoDArray.GetDmY() - 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], TwoDArray.GetDmY() - 2, colourVec[4]);
+                            cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 2};
+                        }
                     }
+                    Player = {Player[0], Player[1] = TwoDArray.GetDmY() - 1};
                 }
-                Player = {Player[0], Player[1]=TwoDArray.GetDmY()-1};
             }
+            TCODConsole::root->flush();
+        } else if (key.c == 'a' || key.c == 'A') {
+            if (TCODConsole::root->getChar(Player[0] - 1, Player[1]) != '#' &&
+                TCODConsole::root->getChar(Player[0] - 1, Player[1]) != pl2) {
+                if (TCODConsole::root->getChar(Player[0] - 1, Player[1]) != 'O' && Player[0] - 1 >= 0) {
+                    TCODConsole::root->setChar(Player[0] - 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(Player[0] - 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0] - 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != 'O')
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != pl2)
+                           && Player[0] - 1 < 0) {
+                    TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0] = TwoDArray.GetDmX() - 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(Player[0] - 1, Player[1]) == 'O')
+                           && (TCODConsole::root->getChar(Player[0] - 2, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(Player[0] - 2, Player[1]) != pl2)
+                           && (TCODConsole::root->getChar(Player[0] - 2, Player[1]) != 'O')
+                           && Player[0] - 2 >= 0) {
+                    TCODConsole::root->setChar(Player[0] - 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(Player[0] - 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0] - 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(Player[0] - 2, Player[1], colourVec[2]);
+                            cross.second = {cross.second[0] - 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0] - 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(Player[0] - 2, Player[1], colourVec[3]);
+                            cross.second = {cross.second[0] - 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0] - 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(Player[0] - 2, Player[1], colourVec[4]);
+                            cross.second = {cross.second[0] - 1, cross.second[1]};
+                        }
+                    }
+                    Player = {Player[0] - 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(Player[0] - 1, Player[1]) == 'O')
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != pl2)
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != 'O')
+                           && Player[0] - 2 < 0) {
+                    TCODConsole::root->setChar(Player[0] - 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(Player[0] - 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[2]);
+                            cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[3]);
+                            cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[4]);
+                            cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
+                        }
+                    }
+                    Player = {Player[0] - 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) == 'O')
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player[1]) != pl2)
+                           && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player[1]) != 'O')
+                           && Player[0] - 1 < 0) {
+                    TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player[1], colourVec[2]);
+                            cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player[1], colourVec[3]);
+                            cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player[1], colourVec[4]);
+                            cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
+                        }
+                    }
+                    Player = {Player[0] = TwoDArray.GetDmX() - 1, Player[1]};
+                }
+            }
+            TCODConsole::root->flush();
+        } else if (key.c == 's' || key.c == 'S') {
+            if (TCODConsole::root->getChar(Player[0], Player[1] + 1) != '#' &&
+                TCODConsole::root->getChar(Player[0], Player[1] + 1) != pl2) {
+                if (TCODConsole::root->getChar(Player[0], Player[1] + 1) != 'O' && Player[1] + 1 < TwoDArray.GetDmY()) {
+                    TCODConsole::root->setChar(Player[0], Player[1] + 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], Player[1] + 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0], Player[1] + 1};
+                } else if ((TCODConsole::root->getChar(Player[0], 0) != '#') &&
+                           (TCODConsole::root->getChar(Player[0], 0) != 'O') &&
+                           (TCODConsole::root->getChar(Player[0], 0) != pl2) && (Player[1] + 1 >= TwoDArray.GetDmY())) {
+                    TCODConsole::root->setChar(Player[0], 0, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], 0, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0], Player[1] = 0};
+                } else if ((TCODConsole::root->getChar(Player[0], Player[1] + 1) == 'O')
+                           && (TCODConsole::root->getChar(Player[0], Player[1] + 2) != '#')
+                           && (TCODConsole::root->getChar(Player[0], Player[1] + 2) != pl2)
+                           && (TCODConsole::root->getChar(Player[0], Player[1] + 2) != 'O')
+                           && Player[1] + 2 < TwoDArray.GetDmY()) {
+                    TCODConsole::root->setChar(Player[0], Player[1] + 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], Player[1] + 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] + 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], Player[1] + 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], Player[1] + 2, colourVec[2]);
+                            cross.second = {cross.second[0], cross.second[1] + 1};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] + 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], Player[1] + 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], Player[1] + 2, colourVec[3]);
+                            cross.second = {cross.second[0], cross.second[1] + 1};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] + 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], Player[1] + 2, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], Player[1] + 2, colourVec[4]);
+                            cross.second = {cross.second[0], cross.second[1] + 1};
+                        }
+                    }
+                    Player = {Player[0], Player[1] + 1};
+                } else if ((TCODConsole::root->getChar(Player[0], Player[1] + 1) == 'O')
+                           && (TCODConsole::root->getChar(Player[0], 0) != '#')
+                           && (TCODConsole::root->getChar(Player[0], 0) != pl2)
+                           && (TCODConsole::root->getChar(Player[0], 0) != 'O')
+                           && Player[1] + 2 >= TwoDArray.GetDmY()) {
+                    TCODConsole::root->setChar(Player[0], Player[1] + 1, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], Player[1] + 1, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] + 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], 0, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], 0, colourVec[2]);
+                            cross.second = {cross.second[0], cross.second[1] = 0};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] + 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], 0, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], 0, colourVec[3]);
+                            cross.second = {cross.second[0], cross.second[1] = 0};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] == cross.second[0]) && (Player[1] + 1 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], 0, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], 0, colourVec[4]);
+                            cross.second = {cross.second[0], cross.second[1] = 0};
+                        }
+                    }
+                    Player = {Player[0], Player[1] + 1};
+                } else if ((TCODConsole::root->getChar(Player[0], 0) == 'O')
+                           && (TCODConsole::root->getChar(Player[0], 1) != '#')
+                           && (TCODConsole::root->getChar(Player[0], 1) != pl2)
+                           && (TCODConsole::root->getChar(Player[0], 1) != 'O')
+                           && Player[1] + 1 >= TwoDArray.GetDmY()) {
+                    TCODConsole::root->setChar(Player[0], 0, pl1);
+                    TCODConsole::root->setCharBackground(Player[0], 0, colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] == cross.second[0]) && (0 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], 1, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], 1, colourVec[2]);
+                            cross.second = {cross.second[0], cross.second[1] = 1};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] == cross.second[0]) && (0 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], 1, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], 1, colourVec[3]);
+                            cross.second = {cross.second[0], cross.second[1] = 1};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] == cross.second[0]) && (0 == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0], 1, 'O');
+                            TCODConsole::root->setCharBackground(Player[0], 1, colourVec[4]);
+                            cross.second = {cross.second[0], cross.second[1] = 1};
+                        }
+                    }
+                    Player = {Player[0], Player[1] = 0};
+                }
+            }
+            TCODConsole::root->flush();
+        } else if (key.c == 'd' || key.c == 'D') {
+            if (TCODConsole::root->getChar(Player[0] + 1, Player[1]) != '#' &&
+                TCODConsole::root->getChar(Player[0] + 1, Player[1]) != pl2) {
+                if (TCODConsole::root->getChar(Player[0] + 1, Player[1]) != 'O' && Player[0] + 1 < TwoDArray.GetDmX()) {
+                    TCODConsole::root->setChar(Player[0] + 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(Player[0] + 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0] + 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(0, Player[1]) != '#') &&
+                           (TCODConsole::root->getChar(0, Player[1]) != 'O') &&
+                           (TCODConsole::root->getChar(0, Player[1]) != pl2) && (Player[0] + 1 >= TwoDArray.GetDmX())) {
+                    TCODConsole::root->setChar(0, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(0, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    Player = {Player[0] = 0, Player[1]};
+                } else if ((TCODConsole::root->getChar(Player[0] + 1, Player[1]) == 'O')
+                           && (TCODConsole::root->getChar(Player[0] + 2, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(Player[0] + 2, Player[1]) != pl2)
+                           && (TCODConsole::root->getChar(Player[0] + 2, Player[1]) != 'O')
+                           && Player[0] + 2 < TwoDArray.GetDmX()) {
+                    TCODConsole::root->setChar(Player[0] + 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(Player[0] + 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] + 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0] + 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(Player[0] + 2, Player[1], colourVec[2]);
+                            cross.second = {cross.second[0] + 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] + 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0] + 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(Player[0] + 2, Player[1], colourVec[3]);
+                            cross.second = {cross.second[0] + 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] + 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(Player[0] + 2, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(Player[0] + 2, Player[1], colourVec[4]);
+                            cross.second = {cross.second[0] + 1, cross.second[1]};
+                        }
+                    }
+                    Player = {Player[0] + 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(Player[0] + 1, Player[1]) == 'O')
+                           && (TCODConsole::root->getChar(0, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(0, Player[1]) != pl2)
+                           && (TCODConsole::root->getChar(0, Player[1]) != 'O')
+                           && Player[0] + 2 >= TwoDArray.GetDmX()) {
+                    TCODConsole::root->setChar(Player[0] + 1, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(Player[0] + 1, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    TCODConsole::root->setChar(0, Player[1], 'O');
+                    TCODConsole::root->setCharBackground(0, Player[1], colourVec[2]);
+                    for (auto &cross:O_BoxChar) {
+                        if ((Player[0] + 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(0, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(0, Player[1], colourVec[2]);
+                            cross.second = {cross.second[0] = 0, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((Player[0] + 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(0, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(0, Player[1], colourVec[3]);
+                            cross.second = {cross.second[0] = 0, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((Player[0] + 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(0, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(0, Player[1], colourVec[4]);
+                            cross.second = {cross.second[0] = 0, cross.second[1]};
+                        }
+                    }
+                    Player = {Player[0] + 1, Player[1]};
+                } else if ((TCODConsole::root->getChar(0, Player[1]) == 'O')
+                           && (TCODConsole::root->getChar(1, Player[1]) != '#')
+                           && (TCODConsole::root->getChar(1, Player[1]) != pl2)
+                           && (TCODConsole::root->getChar(1, Player[1]) != 'O')
+                           && Player[0] + 1 >= TwoDArray.GetDmX()) {
+                    TCODConsole::root->setChar(0, Player[1], pl1);
+                    TCODConsole::root->setCharBackground(0, Player[1], colourVec[0]);
+                    TCODConsole::root->setChar(Player[0], Player[1], ' ');
+                    TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
+                    for (auto &cross:O_BoxChar) {
+                        if ((0 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(1, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(1, Player[1], colourVec[2]);
+                            cross.second = {cross.second[0] = 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_BoxInt) {
+                        if ((0 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(1, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(1, Player[1], colourVec[3]);
+                            cross.second = {cross.second[0] = 1, cross.second[1]};
+                        }
+                    }
+                    for (auto &cross:O_Box) {
+                        if ((0 == cross.second[0]) && (Player[1] == cross.second[1])) {
+                            TCODConsole::root->setChar(1, Player[1], 'O');
+                            TCODConsole::root->setCharBackground(1, Player[1], colourVec[4]);
+                            cross.second = {cross.second[0] = 1, cross.second[1]};
+                        }
+                    }
+                    Player = {Player[0] = 0, Player[1]};
+                }
+            }
+            TCODConsole::root->flush();
+        } else if (key.c == 'q' || key.c == 'Q') {
+            i += 1;
         }
-        TCODConsole::root->flush();
-    }
-    else if ( key.c == 'a' || key.c == 'A' ) {
-        if (TCODConsole::root -> getChar(Player[0] - 1, Player[1]) != '#' && TCODConsole::root -> getChar(Player[0] - 1, Player[1]) != 'P') {
-            if (TCODConsole::root->getChar(Player[0] - 1, Player[1]) != 'O' && Player[0] - 1 >= 0) {
-                TCODConsole::root->setChar(Player[0] - 1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(Player[0] - 1, Player[1], colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                Player = {Player[0] - 1, Player[1]};
-            } else if ((TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != '#')
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != 'O')
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != pl2)
-                       && Player[0] - 1 < 0) {
-                TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                Player = {Player[0] = TwoDArray.GetDmX() - 1, Player[1]};
-            } else if ((TCODConsole::root->getChar(Player[0] - 1, Player[1]) == 'O')
-                       && (TCODConsole::root->getChar(Player[0] - 2, Player[1]) != '#')
-                       && (TCODConsole::root->getChar(Player[0] - 2, Player[1]) != pl2)
-                       && (TCODConsole::root->getChar(Player[0] - 2, Player[1]) != 'O')
-                       && Player[0] - 2 >= 0) {
-                TCODConsole::root->setChar(Player[0] - 1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(Player[0] - 1, Player[1], colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                for (auto &cross:O_BoxChar) {
-                    if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(Player[0] - 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(Player[0] - 2, Player[1], colourVec[2]);
-                        cross.second = {cross.second[0] - 1, cross.second[1]};
-                    }
-                }
-                for (auto &cross:O_BoxInt) {
-                    if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(Player[0] - 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(Player[0] - 2, Player[1], colourVec[3]);
-                        cross.second = {cross.second[0] - 1, cross.second[1]};
-                    }
-                }
-                for (auto &cross:O_Box) {
-                    if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(Player[0] - 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(Player[0] - 2, Player[1], colourVec[4]);
-                        cross.second = {cross.second[0] - 1, cross.second[1]};
-                    }
-                }
-                Player = {Player[0] - 1, Player[1]};
-            } else if ((TCODConsole::root->getChar(Player[0] - 1, Player[1]) == 'O')
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != '#')
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != pl2)
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) != 'O')
-                       && Player[0] - 2 < 0) {
-                TCODConsole::root->setChar(Player[0] - 1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(Player[0] - 1, Player[1], colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                for (auto &cross:O_BoxChar) {
-                    if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[2]);
-                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
-                    }
-                }
-                for (auto &cross:O_BoxInt) {
-                    if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[3]);
-                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
-                    }
-                }
-                for (auto &cross:O_Box) {
-                    if ((Player[0] - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[4]);
-                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
-                    }
-                }
-                Player = {Player[0] - 1, Player[1]};
-            } else if ((TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player[1]) == 'O')
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player[1]) != '#')
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player[1]) != pl2)
-                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player[1]) != 'O')
-                       && Player[0] - 1 < 0) {
-                TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player[1], colourVec[0]);
-                TCODConsole::root->setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1], {0, 0, 0});
-                for (auto &cross:O_BoxChar) {
-                    if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player[1], colourVec[2]);
-                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
-                    }
-                }
-                for (auto &cross:O_BoxInt) {
-                    if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player[1], colourVec[3]);
-                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
-                    }
-                }
-                for (auto &cross:O_Box) {
-                    if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player[1] == cross.second[1])) {
-                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player[1], colourVec[4]);
-                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
-                    }
-                }
-                Player = {Player[0] = TwoDArray.GetDmX() - 1, Player[1]};
-            }
-        }
-        TCODConsole::root->flush();
-    }
-    else if ( key.c == 's' || key.c == 'S' ) {
-        if (TCODConsole::root -> getChar(Player[0], Player[1] + 1) != '#' && TCODConsole::root -> getChar(Player[0], Player[1] + 1) != pl2){
-            if (TCODConsole::root -> getChar(Player[0], Player[1] + 1) != 'O' && Player[1]+1<TwoDArray.GetDmY()){
-                TCODConsole::root -> setChar(Player[0], Player[1] + 1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], Player[1] + 1,colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                Player = {Player[0], Player[1] + 1};
-            }
-            else if((TCODConsole::root -> getChar(Player[0], 0) != '#') && (TCODConsole::root -> getChar(Player[0], 0)!='O')&& (TCODConsole::root -> getChar(Player[0], 0)!=pl2) && (Player[1]+1>=TwoDArray.GetDmY())){
-                TCODConsole::root -> setChar(Player[0], 0, pl1);
-                TCODConsole::root->setCharBackground(Player[0], 0,colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                Player = {Player[0], Player[1]=0};
-            }
-            else if ((TCODConsole::root -> getChar(Player[0], Player[1] + 1) == 'O')
-                     && (TCODConsole::root -> getChar(Player[0], Player[1] + 2) != '#')
-                     && (TCODConsole::root -> getChar(Player[0], Player[1] + 2) != pl2)
-                     && (TCODConsole::root -> getChar(Player[0], Player[1] + 2) != 'O')
-                     && Player[1]+2<TwoDArray.GetDmY()){
-                TCODConsole::root -> setChar(Player[0], Player[1] + 1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], Player[1] + 1,colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]==cross.second[0])&&(Player[1]+1==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], Player[1] + 2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], Player[1] + 2,colourVec[2]);
-                        cross.second={cross.second[0],cross.second[1]+1};
-                    }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]==cross.second[0])&&(Player[1]+1==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], Player[1] + 2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], Player[1] + 2,colourVec[3]);
-                        cross.second={cross.second[0],cross.second[1]+1};
-                    }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]==cross.second[0])&&(Player[1]+1==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], Player[1] + 2, 'O');
-                        TCODConsole::root->setCharBackground(Player[0], Player[1] + 2,colourVec[4]);
-                        cross.second={cross.second[0],cross.second[1]+1};
-                    }
-                }
-                Player = {Player[0], Player[1] + 1};
-            }
-            else if ((TCODConsole::root -> getChar(Player[0], Player[1] + 1) == 'O')
-                     && (TCODConsole::root -> getChar(Player[0], 0) != '#')
-                     && (TCODConsole::root -> getChar(Player[0], 0) != pl2)
-                     && (TCODConsole::root -> getChar(Player[0], 0) != 'O')
-                     && Player[1]+2>=TwoDArray.GetDmY()){
-                TCODConsole::root -> setChar(Player[0], Player[1]+1, pl1);
-                TCODConsole::root->setCharBackground(Player[0], Player[1]+1,colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]==cross.second[0])&&(Player[1]+1==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], 0 , 'O');
-                        TCODConsole::root->setCharBackground(Player[0], 0 ,colourVec[2]);
-                        cross.second={cross.second[0],cross.second[1]=0};
-                    }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]==cross.second[0])&&(Player[1]+1==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], 0 , 'O');
-                        TCODConsole::root->setCharBackground(Player[0], 0 ,colourVec[3]);
-                        cross.second={cross.second[0],cross.second[1]=0};
-                    }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]==cross.second[0])&&(Player[1]+1==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], 0 , 'O');
-                        TCODConsole::root->setCharBackground(Player[0], 0 ,colourVec[4]);
-                        cross.second={cross.second[0],cross.second[1]=0};
-                    }
-                }
-                Player = {Player[0], Player[1] + 1};
-            }
-            else if ((TCODConsole::root->getChar(Player[0], 0) == 'O')
-                     && (TCODConsole::root->getChar(Player[0], 1) != '#')
-                     && (TCODConsole::root->getChar(Player[0], 1) != pl2)
-                     && (TCODConsole::root->getChar(Player[0], 1) != 'O')
-                     && Player[1] + 1 >= TwoDArray.GetDmY()) {
-                TCODConsole::root -> setChar(Player[0], 0, pl1);
-                TCODConsole::root->setCharBackground(Player[0], 0,colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]==cross.second[0])&&(0==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], 1 , 'O');
-                        TCODConsole::root->setCharBackground(Player[0], 1 ,colourVec[2]);
-                        cross.second={cross.second[0],cross.second[1]=1};
-                    }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]==cross.second[0])&&(0==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], 1 , 'O');
-                        TCODConsole::root->setCharBackground(Player[0], 1 ,colourVec[3]);
-                        cross.second={cross.second[0],cross.second[1]=1};
-                    }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]==cross.second[0])&&(0==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0], 1 , 'O');
-                        TCODConsole::root->setCharBackground(Player[0], 1 ,colourVec[4]);
-                        cross.second={cross.second[0],cross.second[1]=1};
-                    }
-                }
-                Player = {Player[0], Player[1]=0};
-            }
-        }
-        TCODConsole::root->flush();
-    }
-    else if ( key.c == 'd' || key.c == 'D' ) {
-        if (TCODConsole::root -> getChar(Player[0] + 1, Player[1]) != '#' && TCODConsole::root -> getChar(Player[0] + 1, Player[1]) != pl2){
-            if (TCODConsole::root -> getChar(Player[0]+1, Player[1]) != 'O' && Player[0]+1<TwoDArray.GetDmX()){
-                TCODConsole::root -> setChar(Player[0]+1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(Player[0]+1, Player[1],colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                Player = {Player[0]+1, Player[1]};
-            }
-            else if((TCODConsole::root -> getChar(0, Player[1]) != '#') && (TCODConsole::root -> getChar(0, Player[1])!='O') && (TCODConsole::root -> getChar(0, Player[1])!=pl2) && (Player[0]+1>=TwoDArray.GetDmX())){
-                TCODConsole::root -> setChar(0, Player[1], pl1);
-                TCODConsole::root->setCharBackground(0, Player[1],colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                Player = {Player[0]=0, Player[1]};
-            }
-
-            else if ((TCODConsole::root -> getChar(Player[0]+1, Player[1]) == 'O')
-                     && (TCODConsole::root -> getChar(Player[0]+2, Player[1]) != '#')
-                     && (TCODConsole::root -> getChar(Player[0]+2, Player[1]) != pl2)
-                     && (TCODConsole::root -> getChar(Player[0]+2, Player[1]) != 'O')
-                     && Player[0]+2<TwoDArray.GetDmX()){
-                TCODConsole::root -> setChar(Player[0]+1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(Player[0]+1, Player[1],colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]+1==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0] + 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(Player[0]+2, Player[1],colourVec[2]);
-                        cross.second={cross.second[0]+1,cross.second[1]};
-                    }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]+1==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0] + 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(Player[0]+2, Player[1],colourVec[3]);
-                        cross.second={cross.second[0]+1,cross.second[1]};
-                    }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]+1==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(Player[0] + 2, Player[1], 'O');
-                        TCODConsole::root->setCharBackground(Player[0]+2, Player[1],colourVec[4]);
-                        cross.second={cross.second[0]+1,cross.second[1]};
-                    }
-                }
-                Player = {Player[0]+1, Player[1]};
-            }
-            else if ((TCODConsole::root -> getChar(Player[0]+1, Player[1]) == 'O')
-                     && (TCODConsole::root -> getChar(0, Player[1]) != '#')
-                     && (TCODConsole::root -> getChar(0, Player[1]) != pl2)
-                     && (TCODConsole::root -> getChar(0, Player[1]) != 'O')
-                     && Player[0]+2>=TwoDArray.GetDmX()){
-                TCODConsole::root -> setChar(Player[0]+1, Player[1], pl1);
-                TCODConsole::root->setCharBackground(Player[0]+1, Player[1],colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                TCODConsole::root -> setChar(0, Player[1] , 'O');
-                TCODConsole::root->setCharBackground(0, Player[1] ,colourVec[2]);
-                for(auto &cross:O_BoxChar){
-                    if((Player[0]+1==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(0, Player[1] , 'O');
-                        TCODConsole::root->setCharBackground(0, Player[1] ,colourVec[2]);
-                        cross.second={cross.second[0]=0,cross.second[1]};
-                    }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((Player[0]+1==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(0, Player[1] , 'O');
-                        TCODConsole::root->setCharBackground(0, Player[1] ,colourVec[3]);
-                        cross.second={cross.second[0]=0,cross.second[1]};
-                    }
-                }
-                for(auto &cross:O_Box){
-                    if((Player[0]+1==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(0, Player[1] , 'O');
-                        TCODConsole::root->setCharBackground(0, Player[1] ,colourVec[4]);
-                        cross.second={cross.second[0]=0,cross.second[1]};
-                    }
-                }
-                Player = {Player[0]+1, Player[1]};
-            }
-            else if ((TCODConsole::root->getChar(0, Player[1]) == 'O')
-                     && (TCODConsole::root->getChar(1, Player[1]) != '#')
-                     && (TCODConsole::root->getChar(1, Player[1]) != pl2)
-                     && (TCODConsole::root->getChar(1, Player[1]) != 'O')
-                     && Player[0] + 1 >= TwoDArray.GetDmX()) {
-                TCODConsole::root -> setChar(0, Player[1], pl1);
-                TCODConsole::root->setCharBackground(0, Player[1],colourVec[0]);
-                TCODConsole::root-> setChar(Player[0], Player[1], ' ');
-                TCODConsole::root->setCharBackground(Player[0], Player[1],{0,0,0});
-                for(auto &cross:O_BoxChar){
-                    if((0==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(1, Player[1] , 'O');
-                        TCODConsole::root->setCharBackground(1, Player[1] ,colourVec[2]);
-                        cross.second={cross.second[0]=1,cross.second[1]};
-                    }
-                }
-                for(auto &cross:O_BoxInt){
-                    if((0==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(1, Player[1] , 'O');
-                        TCODConsole::root->setCharBackground(1, Player[1] ,colourVec[3]);
-                        cross.second={cross.second[0]=1,cross.second[1]};
-                    }
-                }
-                for(auto &cross:O_Box){
-                    if((0==cross.second[0])&&(Player[1]==cross.second[1])){
-                        TCODConsole::root -> setChar(1, Player[1] , 'O');
-                        TCODConsole::root->setCharBackground(1, Player[1] ,colourVec[4]);
-                        cross.second={cross.second[0]=1,cross.second[1]};
-                    }
-                }
-                Player = {Player[0]=0, Player[1]};
-            }
-        }
-        TCODConsole::root->flush();
-    }
-    else if(key.c=='q' || key.c=='Q'){
-        i+=1;
     }
     return key.c;
+}
+void UpdatePlayer2(TwoD<char>TwoDArray,vector<int>& Player2, const vector<TCODColor>& colourVec,map<Box<char>, vector<int>>& O_BoxChar,map<Box<int>, vector<int>>& O_BoxInt,map<CommonBox,vector<int>>&O_Box,char pl1,char pl2,char button){
+    if (button == 'w' || button == 'W') {
+        if (TCODConsole::root->getChar(Player2[0], Player2[1] - 1) != '#' &&
+            TCODConsole::root->getChar(Player2[0], Player2[1] - 1) != pl1) {
+            if (TCODConsole::root->getChar(Player2[0], Player2[1] - 1) != 'O' && Player2[1] - 1 >= 0) {
+                TCODConsole::root->setChar(Player2[0], Player2[1] - 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1] - 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0], Player2[1] - 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) != 'O')
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) != pl1)
+                       && Player2[1] - 1 < 0) {
+                TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0], Player2[1] = TwoDArray.GetDmY() - 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], Player2[1] - 1) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0], Player2[1] - 2) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], Player2[1] - 2) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0], Player2[1] - 2) != 'O')
+                       && Player2[1] - 2 >= 0) {
+                TCODConsole::root->setChar(Player2[0], Player2[1] - 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1] - 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], Player2[1] - 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], Player2[1] - 2, colourVec[2]);
+                        cross.second = {cross.second[0], cross.second[1] - 1};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], Player2[1] - 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], Player2[1] - 2, colourVec[3]);
+                        cross.second = {cross.second[0], cross.second[1] - 1};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], Player2[1] - 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], Player2[1] - 2, colourVec[4]);
+                        cross.second = {cross.second[0], cross.second[1] - 1};
+                    }
+                }
+                Player2 = {Player2[0], Player2[1] - 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], Player2[1] - 1) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) != 'O')
+                       && Player2[1] - 2 < 0) {
+                TCODConsole::root->setChar(Player2[0], Player2[1] - 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1] - 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 1, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 1, colourVec[2]);
+                        cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 1};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 1, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 1, colourVec[3]);
+                        cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 1};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 1, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 1, colourVec[4]);
+                        cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 1};
+                    }
+                }
+                Player2 = {Player2[0], Player2[1] - 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 1) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 2) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 2) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0], TwoDArray.GetDmY() - 2) != 'O')
+                       && Player2[1] - 1 < 0) {
+                TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] == cross.second[0]) && (TwoDArray.GetDmY() - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 2, colourVec[2]);
+                        cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 2};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] == cross.second[0]) && (TwoDArray.GetDmY() - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 2, colourVec[3]);
+                        cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 2};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] == cross.second[0]) && (TwoDArray.GetDmY() - 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], TwoDArray.GetDmY() - 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], TwoDArray.GetDmY() - 2, colourVec[4]);
+                        cross.second = {cross.second[0], cross.second[1] = TwoDArray.GetDmY() - 2};
+                    }
+                }
+                Player2 = {Player2[0], Player2[1] = TwoDArray.GetDmY() - 1};
+            }
+        }
+        TCODConsole::root->flush();
+    } else if (button == 'a' || button == 'A') {
+        if (TCODConsole::root->getChar(Player2[0] - 1, Player2[1]) != '#' &&
+            TCODConsole::root->getChar(Player2[0] - 1, Player2[1]) != pl1) {
+            if (TCODConsole::root->getChar(Player2[0] - 1, Player2[1]) != 'O' && Player2[0] - 1 >= 0) {
+                TCODConsole::root->setChar(Player2[0] - 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(Player2[0] - 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0] - 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) != 'O')
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) != pl1)
+                       && Player2[0] - 1 < 0) {
+                TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0] = TwoDArray.GetDmX() - 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(Player2[0] - 1, Player2[1]) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0] - 2, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(Player2[0] - 2, Player2[1]) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0] - 2, Player2[1]) != 'O')
+                       && Player2[0] - 2 >= 0) {
+                TCODConsole::root->setChar(Player2[0] - 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(Player2[0] - 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0] - 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(Player2[0] - 2, Player2[1], colourVec[2]);
+                        cross.second = {cross.second[0] - 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0] - 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(Player2[0] - 2, Player2[1], colourVec[3]);
+                        cross.second = {cross.second[0] - 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0] - 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(Player2[0] - 2, Player2[1], colourVec[4]);
+                        cross.second = {cross.second[0] - 1, cross.second[1]};
+                    }
+                }
+                Player2 = {Player2[0] - 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(Player2[0] - 1, Player2[1]) == 'O')
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) != pl1)
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) != 'O')
+                       && Player2[0] - 2 < 0) {
+                TCODConsole::root->setChar(Player2[0] - 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(Player2[0] - 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player2[1], colourVec[2]);
+                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player2[1], colourVec[3]);
+                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player2[1], colourVec[4]);
+                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 1, cross.second[1]};
+                    }
+                }
+                Player2 = {Player2[0] - 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(TwoDArray.GetDmX() - 1, Player2[1]) == 'O')
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player2[1]) != pl1)
+                       && (TCODConsole::root->getChar(TwoDArray.GetDmX() - 2, Player2[1]) != 'O')
+                       && Player2[0] - 1 < 0) {
+                TCODConsole::root->setChar(TwoDArray.GetDmX() - 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player2[1], colourVec[2]);
+                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player2[1], colourVec[3]);
+                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((TwoDArray.GetDmX() - 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(TwoDArray.GetDmX() - 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(TwoDArray.GetDmX() - 2, Player2[1], colourVec[4]);
+                        cross.second = {cross.second[0] = TwoDArray.GetDmX() - 2, cross.second[1]};
+                    }
+                }
+                Player2 = {Player2[0] = TwoDArray.GetDmX() - 1, Player2[1]};
+            }
+        }
+        TCODConsole::root->flush();
+    } else if (button == 's' || button == 'S') {
+        if (TCODConsole::root->getChar(Player2[0], Player2[1] + 1) != '#' &&
+            TCODConsole::root->getChar(Player2[0], Player2[1] + 1) != pl1) {
+            if (TCODConsole::root->getChar(Player2[0], Player2[1] + 1) != 'O' && Player2[1] + 1 < TwoDArray.GetDmY()) {
+                TCODConsole::root->setChar(Player2[0], Player2[1] + 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1] + 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0], Player2[1] + 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], 0) != '#') &&
+                       (TCODConsole::root->getChar(Player2[0], 0) != 'O') &&
+                       (TCODConsole::root->getChar(Player2[0], 0) != pl1) && (Player2[1] + 1 >= TwoDArray.GetDmY())) {
+                TCODConsole::root->setChar(Player2[0], 0, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], 0, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0], Player2[1] = 0};
+            } else if ((TCODConsole::root->getChar(Player2[0], Player2[1] + 1) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0], Player2[1] + 2) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], Player2[1] + 2) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0], Player2[1] + 2) != 'O')
+                       && Player2[1] + 2 < TwoDArray.GetDmY()) {
+                TCODConsole::root->setChar(Player2[0], Player2[1] + 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1] + 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] + 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], Player2[1] + 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], Player2[1] + 2, colourVec[2]);
+                        cross.second = {cross.second[0], cross.second[1] + 1};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] + 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], Player2[1] + 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], Player2[1] + 2, colourVec[3]);
+                        cross.second = {cross.second[0], cross.second[1] + 1};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] + 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], Player2[1] + 2, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], Player2[1] + 2, colourVec[4]);
+                        cross.second = {cross.second[0], cross.second[1] + 1};
+                    }
+                }
+                Player2 = {Player2[0], Player2[1] + 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], Player2[1] + 1) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0], 0) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], 0) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0], 0) != 'O')
+                       && Player2[1] + 2 >= TwoDArray.GetDmY()) {
+                TCODConsole::root->setChar(Player2[0], Player2[1] + 1, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1] + 1, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] + 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], 0, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], 0, colourVec[2]);
+                        cross.second = {cross.second[0], cross.second[1] = 0};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] + 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], 0, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], 0, colourVec[3]);
+                        cross.second = {cross.second[0], cross.second[1] = 0};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] == cross.second[0]) && (Player2[1] + 1 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], 0, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], 0, colourVec[4]);
+                        cross.second = {cross.second[0], cross.second[1] = 0};
+                    }
+                }
+                Player2 = {Player2[0], Player2[1] + 1};
+            } else if ((TCODConsole::root->getChar(Player2[0], 0) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0], 1) != '#')
+                       && (TCODConsole::root->getChar(Player2[0], 1) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0], 1) != 'O')
+                       && Player2[1] + 1 >= TwoDArray.GetDmY()) {
+                TCODConsole::root->setChar(Player2[0], 0, pl2);
+                TCODConsole::root->setCharBackground(Player2[0], 0, colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] == cross.second[0]) && (0 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], 1, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], 1, colourVec[2]);
+                        cross.second = {cross.second[0], cross.second[1] = 1};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] == cross.second[0]) && (0 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], 1, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], 1, colourVec[3]);
+                        cross.second = {cross.second[0], cross.second[1] = 1};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] == cross.second[0]) && (0 == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0], 1, 'O');
+                        TCODConsole::root->setCharBackground(Player2[0], 1, colourVec[4]);
+                        cross.second = {cross.second[0], cross.second[1] = 1};
+                    }
+                }
+                Player2 = {Player2[0], Player2[1] = 0};
+            }
+        }
+        TCODConsole::root->flush();
+    } else if (button == 'd' || button == 'D') {
+        if (TCODConsole::root->getChar(Player2[0] + 1, Player2[1]) != '#' &&
+            TCODConsole::root->getChar(Player2[0] + 1, Player2[1]) != pl1) {
+            if (TCODConsole::root->getChar(Player2[0] + 1, Player2[1]) != 'O' && Player2[0] + 1 < TwoDArray.GetDmX()) {
+                TCODConsole::root->setChar(Player2[0] + 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(Player2[0] + 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0] + 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(0, Player2[1]) != '#') &&
+                       (TCODConsole::root->getChar(0, Player2[1]) != 'O') &&
+                       (TCODConsole::root->getChar(0, Player2[1]) != pl1) && (Player2[0] + 1 >= TwoDArray.GetDmX())) {
+                TCODConsole::root->setChar(0, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(0, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                Player2 = {Player2[0] = 0, Player2[1]};
+            } else if ((TCODConsole::root->getChar(Player2[0] + 1, Player2[1]) == 'O')
+                       && (TCODConsole::root->getChar(Player2[0] + 2, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(Player2[0] + 2, Player2[1]) != pl1)
+                       && (TCODConsole::root->getChar(Player2[0] + 2, Player2[1]) != 'O')
+                       && Player2[0] + 2 < TwoDArray.GetDmX()) {
+                TCODConsole::root->setChar(Player2[0] + 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(Player2[0] + 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] + 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0] + 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(Player2[0] + 2, Player2[1], colourVec[2]);
+                        cross.second = {cross.second[0] + 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] + 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0] + 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(Player2[0] + 2, Player2[1], colourVec[3]);
+                        cross.second = {cross.second[0] + 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] + 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(Player2[0] + 2, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(Player2[0] + 2, Player2[1], colourVec[4]);
+                        cross.second = {cross.second[0] + 1, cross.second[1]};
+                    }
+                }
+                Player2 = {Player2[0] + 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(Player2[0] + 1, Player2[1]) == 'O')
+                       && (TCODConsole::root->getChar(0, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(0, Player2[1]) != pl1)
+                       && (TCODConsole::root->getChar(0, Player2[1]) != 'O')
+                       && Player2[0] + 2 >= TwoDArray.GetDmX()) {
+                TCODConsole::root->setChar(Player2[0] + 1, Player2[1], pl2);
+                TCODConsole::root->setCharBackground(Player2[0] + 1, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                TCODConsole::root->setChar(0, Player2[1], 'O');
+                TCODConsole::root->setCharBackground(0, Player2[1], colourVec[2]);
+                for (auto &cross:O_BoxChar) {
+                    if ((Player2[0] + 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(0, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(0, Player2[1], colourVec[2]);
+                        cross.second = {cross.second[0] = 0, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((Player2[0] + 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(0, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(0, Player2[1], colourVec[3]);
+                        cross.second = {cross.second[0] = 0, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((Player2[0] + 1 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(0, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(0, Player2[1], colourVec[4]);
+                        cross.second = {cross.second[0] = 0, cross.second[1]};
+                    }
+                }
+                Player2 = {Player2[0] + 1, Player2[1]};
+            } else if ((TCODConsole::root->getChar(0, Player2[1]) == 'O')
+                       && (TCODConsole::root->getChar(1, Player2[1]) != '#')
+                       && (TCODConsole::root->getChar(1, Player2[1]) != pl1)
+                       && (TCODConsole::root->getChar(1, Player2[1]) != 'O')
+                       && Player2[0] + 1 >= TwoDArray.GetDmX()) {
+                TCODConsole::root->setChar(0, Player2[1], pl1);
+                TCODConsole::root->setCharBackground(0, Player2[1], colourVec[0]);
+                TCODConsole::root->setChar(Player2[0], Player2[1], ' ');
+                TCODConsole::root->setCharBackground(Player2[0], Player2[1], {0, 0, 0});
+                for (auto &cross:O_BoxChar) {
+                    if ((0 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(1, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(1, Player2[1], colourVec[2]);
+                        cross.second = {cross.second[0] = 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_BoxInt) {
+                    if ((0 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(1, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(1, Player2[1], colourVec[3]);
+                        cross.second = {cross.second[0] = 1, cross.second[1]};
+                    }
+                }
+                for (auto &cross:O_Box) {
+                    if ((0 == cross.second[0]) && (Player2[1] == cross.second[1])) {
+                        TCODConsole::root->setChar(1, Player2[1], 'O');
+                        TCODConsole::root->setCharBackground(1, Player2[1], colourVec[4]);
+                        cross.second = {cross.second[0] = 1, cross.second[1]};
+                    }
+                }
+                Player2 = {Player2[0] = 0, Player2[1]};
+            }
+        }
+        TCODConsole::root->flush();
+    } else if (button == 'q' || button == 'Q') {
+        i += 1;
+    }
 }
 #endif //PROJECT_GAMEFUNCTIONS_H

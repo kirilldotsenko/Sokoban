@@ -76,7 +76,7 @@ int main() {
 
         // Задаём таймаут
         timeval timeout;
-        timeout.tv_sec = 15;
+        timeout.tv_sec = 20;
         timeout.tv_usec = 0;
 
         // Ждём события в одном из сокетов
@@ -130,10 +130,8 @@ int main() {
                     }
                     send(*it, buff, length, 0);
                     fs.close();
-                    cout << buff << endl;
                 }
                 if(buf[0]=='K'){
-                    cout<<"HI"<<endl;
                     if(count==0) {
                         send(*it, players, sizeof(players), 0);
                         count++;
@@ -143,12 +141,14 @@ int main() {
                         count--;
                     }
                 }
-                else{
+                if(clients.size()==2 && (buf[0]=='W' || buf[0]=='w' || buf[0]=='A' || buf[0]=='a' || buf[0]=='S' || buf[0]=='s' || buf[0]=='D' || buf[0]=='d' || buf[0]=='Q' || buf[0]=='q')){
                     if(it==clients.begin()){
-                        send(*it+1,control,sizeof(control),0);
+                        buf[1]='S';
+                        send(*it+1,buf,sizeof(buf),0);
                     }
                     else{
-                        send(*it-1,control,sizeof(control),0);
+                        buf[1]='S';
+                        send(*it-1,buf,sizeof(buf),0);
                     }
                 }
             }
@@ -156,42 +156,3 @@ int main() {
     }
 
 }
-/*#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-char message[] = "Hello there!\n";
-char buf[sizeof(message)];
-
-int main()
-{
-    int sock;
-    struct sockaddr_in addr;
-
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    if(sock < 0)
-    {
-        perror("socket");
-        exit(1);
-    }
-
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(3425); // или любой другой порт...
-    addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    if(connect(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-    {
-        perror("connect");
-        exit(2);
-    }
-
-    send(sock, message, sizeof(message), 0);
-    recv(sock, buf, sizeof(message), 0);
-
-    printf(buf);
-    close(sock);
-
-    return 0;
-}*/

@@ -35,14 +35,4 @@ cstdlib
 -
 ctime
 -
-sys/socket.h
--
-netinet/in.h
--
-stdio.h
--
-stdlib.h
--
-unistd.h
--
 

@@ -13,6 +13,4 @@ using namespace std;
 
 int main() {
     MapR();
-    /*while(1) {
-    }*/
 }

@@ -67,6 +67,8 @@ stdio.h
 -
 stdlib.h
 -
+sys/ioctl.h
+-
 
 /home/kirill/CLionProjects/SokobanTest/main.cpp
 iostream
